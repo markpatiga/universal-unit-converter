@@ -1,0 +1,11 @@
+{
+  "name": "universal-unit-converter",
+  "version": "0.1.0",
+  "description": "Client-side unit converter for length, weight, temperature, area, volume, time, speed and data storage.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

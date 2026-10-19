@@ -1,0 +1,24 @@
+/* Placeholder styles for Phase 0. Replaced by tokens/base/components in later phases. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  background: #f7f7f8;
+  color: #1b1b1f;
+}
+
+.container {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.status {
+  font-weight: 600;
+}
