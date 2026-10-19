@@ -15,7 +15,7 @@ This log records how I used AI throughout the project: the prompts, the decision
 - Time uses the Julian year (365.25 days), with month = year ÷ 12.
 
 **What the AI got wrong / what I pushed back on:**
-- _(fill in as it happens)_
+- The setup steps assumed npm test would just work. On Windows, PowerShell’s default execution policy blocked npm.ps1. Fixed by setting the policy to RemoteSigned for my user account. Lesson: AI instructions often skip OS-specific setup; check them against your own environment.
 
 **How I verified:**
 - Placeholder page loads at the live GitHub Pages URL and shows "JavaScript is running."

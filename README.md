@@ -2,7 +2,7 @@
 
 A fast, accessible, client-side unit converter for length, weight, temperature, area, volume, time, speed and data storage. No backend, no build step.
 
-**Live demo:** https://YOUR-USERNAME.github.io/universal-unit-converter/
+**Live demo:** https://markpatiga.github.io/universal-unit-converter/
 
 > Status: Phase 0 (setup). The app is under active development.
 
