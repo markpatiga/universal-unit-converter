@@ -20,3 +20,17 @@ This log records how I used AI throughout the project: the prompts, the decision
 **How I verified:**
 - Placeholder page loads at the live GitHub Pages URL and shows "JavaScript is running."
 - `npm test` passes locally.
+
+## Phase 1: Conversion engine (2026-10-20)
+
+**Goal:** unit data for 8 categories, pure convert/validate/format functions, full test suite. No UI.
+
+**What the AI got wrong / what I checked:**
+- Many sources give the US *survey* acre (4046.8726 m²), retired in 2023. We use the
+  international acre (4046.8564224 m²). Swapping the old value in makes 2 tests fail.
+- The AI claimed −459.67 °F computes slightly below 0 K and "needed" a tolerance.
+  Removing the tolerance broke nothing, so the claim was false. Kept as a safety net, comment corrected.
+
+**How I verified:**
+- 86 tests pass. I deliberately broke the inch factor and saw 8 targeted failures.
+- Checked the 5 defining constants against NIST.
