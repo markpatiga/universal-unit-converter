@@ -34,3 +34,14 @@ This log records how I used AI throughout the project: the prompts, the decision
 **How I verified:**
 - 86 tests pass. I deliberately broke the inch factor and saw 8 targeted failures.
 - Checked the 5 defining constants against NIST.
+
+## Phase 2: Core UI (2026-10-20)
+
+**What the AI got wrong / what I checked:**
+- The "To" dropdown rendered white text on a white background (it inherited white from the
+  navy panel). All scripted tests passed; only the screenshot revealed it. Fixed with an explicit color.
+- Plan change: dropped `events.js`; components own their listeners. DESIGN.md updated.
+
+**How I verified:** 94 tests pass; scripted browser run of typing, errors, tab switching and
+keyboard navigation; checked at 360px and 1280px; tested on my own phone.
+
