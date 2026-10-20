@@ -1,7 +1,9 @@
-// Phase 0 placeholder: proves ES modules load on GitHub Pages.
-// Replaced in Phase 2 with the real app bootstrap.
-const status = document.getElementById('status');
+// Entry point: create the store, connect the UI, draw the first frame.
+import { createStore } from './state.js';
+import { createRenderer } from './ui/render.js';
 
-if (status) {
-  status.textContent = 'JavaScript is running. Deployment works.';
-}
+const store = createStore();
+const render = createRenderer(document, store.actions);
+
+store.subscribe(render);
+render(store.getState());

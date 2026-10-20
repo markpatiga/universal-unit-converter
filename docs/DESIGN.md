@@ -1,7 +1,7 @@
 # Universal Unit Converter — Design Document
 
 > Status: Approved, pre-implementation
-> Last updated: 2026-10-20
+> Last updated: 2026-10-20 (Phase 2)
 > Author: Mark (with AI-assisted design review)
 
 ## 1. Overview
@@ -108,10 +108,15 @@ Vanilla JavaScript with native ES modules. Each layer depends only on the layers
 Rules:
 
 1. **The engine never touches the DOM.** It contains only pure functions, so it is trivially testable.
-2. **Data flows one way.** Event → `update(state)` → `render(state)`. No scattered DOM mutations.
+2. **Data flows one way.** Event → action → `update(state)` → `render(state)`. No scattered DOM mutations.
+   Each component attaches its own event listeners and calls a store action; there is no separate `events.js` (changed in Phase 2: keeping a component's markup and listeners together was simpler).
 3. **Adding a unit means adding data, not code.**
 
 Development note: ES modules do not load from `file://`. Use the VS Code Live Server extension or `npx serve`.
+
+### Visual direction (Phase 2)
+
+A tape measure on a drafting table: navy ink (`#14213d`) on cool paper (`#eef1f4`), with tape-measure yellow (`#f2b705`) used only on the result readout and its tick-mark scale. One typeface, Archivo, whose width axis gives the readout its character. All values live in `css/tokens.css`.
 
 ## 6. Folder structure
 
@@ -137,13 +142,13 @@ universal-unit-converter/
 │   │   ├── clipboard.js
 │   │   └── theme.js
 │   └── ui/
-│       ├── render.js
-│       ├── events.js
-│       └── components/
+│       ├── render.js     # connects components to the store; one render(state)
+│       └── components/   # categoryPicker, unitSelect, valueInput, resultPanel, …
 ├── tests/
 │   ├── convert.test.js
 │   ├── validate.test.js
 │   ├── format.test.js
+│   ├── state.test.js
 │   └── units.test.js
 ├── docs/
 │   ├── DESIGN.md
