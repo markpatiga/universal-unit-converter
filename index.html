@@ -5,15 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Universal Unit Converter</title>
   <meta name="description" content="Convert length, weight, temperature, area, volume, time, speed and data storage units instantly in your browser.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+
   <!-- Relative paths (./) so the site works under the GitHub Pages sub-path -->
+  <link rel="stylesheet" href="./css/tokens.css">
   <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
   <script type="module" src="./js/main.js"></script>
 </head>
 <body>
-  <main class="container">
-    <h1>Universal Unit Converter</h1>
-    <p>Coming soon. This placeholder confirms the site deploys correctly.</p>
-    <p id="status" class="status">Checking JavaScript…</p>
+  <main class="page">
+    <header class="page-header">
+      <h1 class="title">Universal Unit Converter</h1>
+      <p class="lede">Length, weight, temperature and five more. Results update as you type.</p>
+    </header>
+
+    <div id="category-tabs" class="category-tabs" role="tablist" aria-label="Measurement"></div>
+
+    <section id="converter-panel" class="converter" role="tabpanel">
+      <div class="field">
+        <label class="field-label" for="value-input">From</label>
+        <div class="field-row">
+          <input id="value-input" class="value-input" type="text" inputmode="decimal"
+                 autocomplete="off" spellcheck="false" aria-describedby="value-error">
+          <label class="visually-hidden" for="from-unit">From unit</label>
+          <select id="from-unit" class="unit-select"></select>
+        </div>
+        <p id="value-error" class="field-error" hidden></p>
+      </div>
+
+      <div class="readout">
+        <label class="field-label readout-label" for="to-unit">To</label>
+        <output class="readout-value" for="value-input from-unit to-unit" aria-live="polite">
+          <span id="result-value" class="readout-number"></span>
+          <span id="result-symbol" class="readout-symbol"></span>
+        </output>
+        <select id="to-unit" class="unit-select unit-select--on-dark"></select>
+        <div class="readout-scale" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <noscript>
+      <p class="field-error">This converter needs JavaScript. Please enable it and reload the page.</p>
+    </noscript>
   </main>
 </body>
 </html>

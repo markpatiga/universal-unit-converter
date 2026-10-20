@@ -1,0 +1,168 @@
+/* Components: category tabs, input field, unit selects, result readout. */
+
+/* ---- Category tabs ---- */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.category-tab {
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: transparent;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.category-tab:hover {
+  border-color: var(--color-ink);
+}
+
+.category-tab[aria-selected="true"] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-weight: 650;
+}
+
+/* ---- Fields ---- */
+.converter {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.field-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+/* Stacked on phones, side by side from 30rem. */
+.field-row {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 30rem) {
+  .field-row {
+    grid-template-columns: 1fr 13rem;
+  }
+}
+
+.value-input,
+.unit-select {
+  width: 100%;
+  min-height: var(--control-height);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  /* Set explicitly: inside the navy readout, inherited text color is white,
+     which made the "To" select white-on-white. */
+  color: var(--color-ink);
+}
+
+.value-input {
+  padding: 0 var(--space-4);
+  font-size: var(--font-size-input);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.value-input:hover,
+.unit-select:hover {
+  border-color: var(--color-ink-muted);
+}
+
+.value-input[aria-invalid="true"] {
+  border-color: var(--color-error);
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+.unit-select {
+  padding: 0 var(--space-3);
+  cursor: pointer;
+}
+
+.field-error {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+/* ---- Result readout: the one bold element on the page ---- */
+.readout {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) calc(var(--space-6) + 14px);
+  border-radius: var(--radius-panel);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  overflow: hidden;
+}
+
+.readout-label {
+  margin-bottom: 0;
+  color: var(--color-on-ink-muted);
+}
+
+.readout-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  min-height: 1.15em;
+  font-size: var(--font-size-readout);
+  line-height: 1.1;
+}
+
+.readout-number {
+  font-weight: 700;
+  font-stretch: 115%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.readout-number.is-long {
+  font-size: 0.7em;
+}
+
+.readout-number.is-placeholder {
+  color: var(--color-on-ink-muted);
+}
+
+.readout-symbol {
+  font-size: 0.45em;
+  font-weight: 500;
+  color: var(--color-tape);
+}
+
+.unit-select--on-dark {
+  max-width: 20rem;
+  border-color: transparent;
+}
+
+/* Tape-measure graduations along the bottom edge, hanging from the top
+   like a real tape: a long tick every 80px, a mid tick every 40px,
+   short ticks every 8px. Three repeating gradients over the yellow. */
+.readout-scale {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14px;
+  background:
+    linear-gradient(to right, var(--color-ink) 2px, transparent 0) 0 0 / 80px 100% repeat-x,
+    linear-gradient(to right, var(--color-ink) 1px, transparent 0) 0 0 / 40px 60% repeat-x,
+    linear-gradient(to right, var(--color-ink) 1px, transparent 0) 0 0 / 8px 35% repeat-x,
+    var(--color-tape);
+}
