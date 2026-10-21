@@ -11,6 +11,7 @@ import { createFormulaPanel } from './components/formulaPanel.js';
 import { createActionButtons } from './components/actionButtons.js';
 import { createToast } from './components/toast.js';
 import { createHistoryList } from './components/historyList.js';
+import { createAnnouncer } from './components/announcer.js';
 
 // options.commitConversion: save the current conversion to history now
 //   (called on Enter and Copy).
@@ -46,6 +47,7 @@ export function createRenderer(doc, store, { commitConversion = () => {}, storag
     { listEl: $('history-list'), emptyEl: $('history-empty'), clearEl: $('history-clear'), noticeEl: $('history-notice') },
     { onRestore: restore, onClear: clearHistory, storageAvailable },
   );
+  const announcer = createAnnouncer($('announcer'));
   const panel = $('converter-panel');
 
   // Restoring moves the cursor to the input, so you can see the result
@@ -93,5 +95,16 @@ export function createRenderer(doc, store, { commitConversion = () => {}, storag
     formula.render(state);
     buttons.render(state, result);
     historyList.render(state.history);
+    announcer.announce(announcement(state, result));
   };
+}
+
+// What a screen reader hears after a pause: the result with the unit's full
+// name ("Mile", not "mi", which would be read as letters), or the error.
+function announcement(state, result) {
+  if (result.status === 'valid') {
+    return `Result: ${result.display} ${getUnit(state.categoryId, state.toId).label}`;
+  }
+  if (result.status === 'invalid') return result.message;
+  return '';
 }

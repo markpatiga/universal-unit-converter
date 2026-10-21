@@ -4,7 +4,9 @@ import { createStore, createInitialState } from './state.js';
 import { sanitizeHistory } from './engine/history.js';
 import { createStorage } from './services/storage.js';
 import { createHistoryRecorder } from './services/historyRecorder.js';
+import { createThemeController } from './services/theme.js';
 import { createRenderer } from './ui/render.js';
+import { createThemeToggle } from './ui/components/themeToggle.js';
 
 // The version is in the key: if the entry format ever changes, a new key
 // (uuc:v2:history) starts fresh instead of misreading old data.
@@ -37,3 +39,13 @@ document.addEventListener('visibilitychange', () => {
 });
 
 render(store.getState());
+
+// Theme: separate from the converter state, because it's about the page,
+// not the conversion. The inline script in index.html already set the
+// first theme; this takes over from there.
+const toggle = createThemeToggle(
+  document.getElementById('theme-toggle'),
+  document.querySelector('meta[name="theme-color"]'),
+  { onToggle: () => theme.toggle() },
+);
+const theme = createThemeController({ storage, onChange: (t) => toggle.render(t) });

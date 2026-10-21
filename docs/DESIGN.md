@@ -1,7 +1,7 @@
 # Universal Unit Converter — Design Document
 
 > Status: Approved, pre-implementation
-> Last updated: 2026-10-21 (Phase 4)
+> Last updated: 2026-10-21 (Phase 5)
 > Author: Mark (with AI-assisted design review)
 
 ## 1. Overview
@@ -68,7 +68,8 @@ Backend, accounts, currency conversion, live exchange rates, Mach number, troy o
 | History entries | Store the typed number and unit ids, not the result. Results are recalculated when shown, so they stay correct if the engine changes. Restoring an entry doesn't reorder the list. |
 | History size | 10 entries, newest first, duplicates moved to the top, one-click restore, "Clear history" button. |
 | Precision | Up to 10 significant digits, trailing zeros trimmed; scientific notation below 1e-6 or above 1e15. |
-| Theme | Follows OS `prefers-color-scheme` by default; a manual toggle overrides and is persisted. |
+| Theme | Follows the OS setting by default. The "Dark mode" toggle saves a choice that overrides it. Toggling back to whatever the OS wants removes the saved choice, so the app follows the OS again: a way back to "automatic" without a third button. An inline script in `<head>` sets the theme before paint (no white flash). |
+| Screen-reader announcements | The result is not a live region (it would speak on every keystroke). A separate status region announces the result, using the unit's full name, or the error, once typing pauses for 0.7 s. |
 | Swap | Swaps the units and keeps the typed value. If that makes the value invalid (−400 °F → °C), the error shows. |
 | Clear | Empties the input only (button or Escape); category and units stay. Focus returns to the input. |
 | Copy | Copies the number only, without the unit, so it pastes cleanly into a spreadsheet or back into the converter. Falls back to `execCommand('copy')`, then to an instruction message. |
@@ -119,15 +120,20 @@ Rules:
 
 Development note: ES modules do not load from `file://`. Use the VS Code Live Server extension or `npx serve`.
 
-### Visual direction (Phase 2)
+### Visual direction (Phases 2 and 5)
 
 A tape measure on a drafting table: navy ink (`#14213d`) on cool paper (`#eef1f4`), with tape-measure yellow (`#f2b705`) used only on the result readout and its tick-mark scale. One typeface, Archivo, whose width axis gives the readout its character. All values live in `css/tokens.css`.
+
+Colors are named by role (`--color-text`, `--color-panel`, `--color-accent`), not appearance, because dark mode needs the text to turn light while the panel stays dark. Dark mode is the same drafting table under a desk lamp: deep navy page, a slightly lifted readout, and the same yellow tape. Both themes are checked for WCAG AA contrast on every text element, and Windows High Contrast (forced colors) is supported.
 
 ## 6. Folder structure
 
 ```
 universal-unit-converter/
 ├── index.html
+├── favicon.svg           # tape-measure icon
+├── apple-touch-icon.png  # 180×180, for phone home screens
+├── og-image.png          # 1200×630 link preview (LinkedIn, Slack)
 ├── css/
 │   ├── tokens.css        # color/spacing variables, light + dark themes
 │   ├── base.css          # reset, typography, layout
@@ -145,6 +151,7 @@ universal-unit-converter/
 │   │   └── formula.js
 │   ├── services/
 │   │   ├── historyRecorder.js  # decides when a conversion has "settled"
+│   │   ├── theme.js          # theme rules + controller
 │   │   ├── storage.js
 │   │   ├── clipboard.js
 │   │   └── theme.js
@@ -156,7 +163,9 @@ universal-unit-converter/
 │   ├── formula.test.js
 │   ├── history.test.js
 │   ├── historyRecorder.test.js
+│   ├── announcer.test.js
 │   ├── storage.test.js
+│   ├── theme.test.js
 │   ├── validate.test.js
 │   ├── format.test.js
 │   ├── state.test.js

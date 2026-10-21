@@ -1,21 +1,88 @@
 /* Design tokens: every color, size and font lives here.
-   Phase 5 adds a dark theme by redefining these same variables.
 
    Direction: a tape measure on a drafting table. Navy ink, cool paper,
-   and tape-measure yellow used only on the result readout. */
-:root {
-  /* Color */
-  --color-paper: #eef1f4;        /* page background, cool drafting paper */
-  --color-surface: #ffffff;      /* inputs */
-  --color-ink: #14213d;          /* main text, readout background */
-  --color-ink-muted: #56607a;    /* secondary text */
-  --color-rule: #c3cad6;         /* borders */
-  --color-tape: #f2b705;         /* tape-measure yellow: the readout scale and selected tab */
-  --color-on-ink: #ffffff;       /* text on the navy readout */
-  --color-on-ink-muted: #b9c2d6;
+   and tape-measure yellow used only on the result readout.
+
+   Colors are named by ROLE (text, panel, accent), not by appearance
+   (navy, white). In light mode the panel and the text are both navy; in
+   dark mode the text turns light but the panel stays dark. Role names let
+   each theme set each one independently.
+
+   The theme is chosen by data-theme="light" | "dark" on <html>, set by a
+   tiny script in index.html before the page paints, then managed by
+   js/services/theme.js. */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light; /* native controls and scrollbars match */
+
+  --color-bg: #eef1f4;              /* page: cool drafting paper */
+  --color-surface: #ffffff;         /* inputs, selects, hovered rows */
+  --color-text: #14213d;            /* navy ink */
+  --color-text-muted: #56607a;
+  --color-rule: #c3cad6;            /* borders and dividers */
+  --color-rule-strong: #56607a;     /* hovered borders */
+
+  --color-panel: #14213d;           /* the result readout */
+  --color-on-panel: #ffffff;
+  --color-on-panel-muted: #b9c2d6;
+  --color-panel-control: #ffffff;   /* the "To" select inside the readout */
+  --color-on-panel-control: #14213d;
+
+  --color-accent: #f2b705;          /* tape-measure yellow */
+  --color-accent-hover: #ffc61a;
+  --color-on-accent: #14213d;
+  --color-tick: #14213d;            /* tick marks printed on the tape */
+
+  --color-selected: #14213d;        /* selected category */
+  --color-on-selected: #ffffff;
+
   --color-error: #b42318;
   --color-focus: #1d5fd1;
+  --color-focus-on-panel: #f2b705;
 
+  --color-toast: #14213d;
+  --color-on-toast: #ffffff;
+  --shadow-toast: 0 6px 20px rgb(20 33 61 / 0.25);
+}
+
+/* Dark: the same drafting table under a desk lamp. The page goes to deep
+   navy, and the readout lifts slightly above it so it still reads as the
+   instrument. The yellow tape doesn't change: it's the constant. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0d1424;
+  --color-surface: #172238;
+  --color-text: #e7ecf5;
+  --color-text-muted: #a3aec4;
+  --color-rule: #2e3b57;
+  --color-rule-strong: #a3aec4;
+
+  --color-panel: #1c2a47;
+  --color-on-panel: #ffffff;
+  --color-on-panel-muted: #b9c2d6;
+  --color-panel-control: #0d1424;
+  --color-on-panel-control: #e7ecf5;
+
+  --color-accent: #f2b705;
+  --color-accent-hover: #ffc61a;
+  --color-on-accent: #14213d;
+  --color-tick: #14213d;
+
+  --color-selected: #e7ecf5;
+  --color-on-selected: #0d1424;
+
+  --color-error: #ff8f85;
+  --color-focus: #7fa8ff;
+  --color-focus-on-panel: #f2b705;
+
+  --color-toast: #e7ecf5;
+  --color-on-toast: #0d1424;
+  --shadow-toast: 0 6px 20px rgb(0 0 0 / 0.5);
+}
+
+:root {
   /* Type: one family, Archivo; its width axis carries the personality */
   --font-family: "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-size-small: 0.875rem;

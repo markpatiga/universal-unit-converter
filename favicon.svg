@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- A folded tape measure: navy case, yellow tape with tick marks. -->
+  <defs><clipPath id="r"><rect width="32" height="32" rx="7"/></clipPath></defs>
+  <g clip-path="url(#r)">
+    <rect width="32" height="32" fill="#14213d"/>
+    <rect y="19" width="32" height="13" fill="#f2b705"/>
+    <g stroke="#14213d" stroke-width="1.5">
+      <path d="M4 19v9M12 19v5M20 19v9M28 19v5"/>
+      <path d="M8 19v3M16 19v3M24 19v3" stroke-width="1"/>
+    </g>
+    <path d="M7 13h18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M7 8h11" stroke="#b9c2d6" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>
