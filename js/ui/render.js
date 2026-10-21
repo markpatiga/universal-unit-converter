@@ -10,8 +10,12 @@ import { createResultPanel } from './components/resultPanel.js';
 import { createFormulaPanel } from './components/formulaPanel.js';
 import { createActionButtons } from './components/actionButtons.js';
 import { createToast } from './components/toast.js';
+import { createHistoryList } from './components/historyList.js';
 
-export function createRenderer(doc, store) {
+// options.commitConversion: save the current conversion to history now
+//   (called on Enter and Copy).
+// options.storageAvailable: false shows a note that history won't be kept.
+export function createRenderer(doc, store, { commitConversion = () => {}, storageAvailable = true } = {}) {
   const { actions } = store;
   const $ = (id) => {
     const el = doc.getElementById(id);
@@ -30,6 +34,7 @@ export function createRenderer(doc, store) {
   const input = createValueInput($('value-input'), $('value-error'), {
     onInput: actions.setInput,
     onEscape: clear,
+    onEnter: commitConversion,
   });
   const output = createResultPanel($('result-value'), $('result-symbol'));
   const formula = createFormulaPanel($('formula-expression'), $('formula-notes'));
@@ -37,7 +42,24 @@ export function createRenderer(doc, store) {
     { swapEl: $('swap-button'), clearEl: $('clear-button'), copyEl: $('copy-button') },
     { onSwap: actions.swapUnits, onClear: clear, onCopy: copy },
   );
+  const historyList = createHistoryList(
+    { listEl: $('history-list'), emptyEl: $('history-empty'), clearEl: $('history-clear'), noticeEl: $('history-notice') },
+    { onRestore: restore, onClear: clearHistory, storageAvailable },
+  );
   const panel = $('converter-panel');
+
+  // Restoring moves the cursor to the input, so you can see the result
+  // (on phones the list is below it) and edit the number straight away.
+  function restore(entry) {
+    actions.restore(entry);
+    input.focus();
+  }
+
+  function clearHistory() {
+    actions.clearHistory();
+    toast.show('History cleared');
+    input.focus(); // the Clear history button disappears, so move focus somewhere useful
+  }
 
   // Clear empties the input and puts the cursor back in it, ready to type.
   function clear() {
@@ -52,6 +74,7 @@ export function createRenderer(doc, store) {
     const result = deriveResult(state);
     if (result.status !== 'valid') return;
 
+    commitConversion(); // copying means "this is the one I wanted"
     const ok = await copyText(result.display);
     const symbol = getUnit(state.categoryId, state.toId).symbol;
     toast.show(ok
@@ -69,5 +92,6 @@ export function createRenderer(doc, store) {
     output.render(state, result);
     formula.render(state);
     buttons.render(state, result);
+    historyList.render(state.history);
   };
 }

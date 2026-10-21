@@ -1,7 +1,7 @@
 # Universal Unit Converter — Design Document
 
 > Status: Approved, pre-implementation
-> Last updated: 2026-10-21 (Phase 3)
+> Last updated: 2026-10-21 (Phase 4)
 > Author: Mark (with AI-assisted design review)
 
 ## 1. Overview
@@ -64,7 +64,8 @@ Backend, accounts, currency conversion, live exchange rates, Mach number, troy o
 | Speed | No Mach (it isn't a fixed factor). |
 | Negative values | Allowed only for Temperature, which must stay at or above absolute zero. Rejected elsewhere. |
 | Accepted input | Digits, one `.`, optional leading `-`, scientific notation (`1e6`). Spaces are stripped. Commas are rejected with a helpful message. |
-| History saving | Convert on every keystroke; save to history only on a settled value (≈1 s idle, Enter, or Copy). |
+| History saving | Convert on every keystroke; save to history only on a settled value: 1 s after the last edit (typing, changing a unit, swapping), or at once on Enter, Copy, or when the page is hidden. Switching category, clearing and restoring don't save, so browsing doesn't fill the list. |
+| History entries | Store the typed number and unit ids, not the result. Results are recalculated when shown, so they stay correct if the engine changes. Restoring an entry doesn't reorder the list. |
 | History size | 10 entries, newest first, duplicates moved to the top, one-click restore, "Clear history" button. |
 | Precision | Up to 10 significant digits, trailing zeros trimmed; scientific notation below 1e-6 or above 1e15. |
 | Theme | Follows OS `prefers-color-scheme` by default; a manual toggle overrides and is persisted. |
@@ -137,11 +138,13 @@ universal-unit-converter/
 │   ├── data/
 │   │   └── units.js
 │   ├── engine/
+│   │   ├── history.js    # recent-conversion rules (pure)
 │   │   ├── convert.js
 │   │   ├── validate.js
 │   │   ├── format.js
 │   │   └── formula.js
 │   ├── services/
+│   │   ├── historyRecorder.js  # decides when a conversion has "settled"
 │   │   ├── storage.js
 │   │   ├── clipboard.js
 │   │   └── theme.js
@@ -151,6 +154,9 @@ universal-unit-converter/
 ├── tests/
 │   ├── convert.test.js
 │   ├── formula.test.js
+│   ├── history.test.js
+│   ├── historyRecorder.test.js
+│   ├── storage.test.js
 │   ├── validate.test.js
 │   ├── format.test.js
 │   ├── state.test.js
@@ -259,7 +265,7 @@ export const categories = {
 - Floating-point artifacts (`0.30000000000000004`) → handled by `format.js`.
 - Very small or large results → scientific notation.
 - Category switch → reset units to category defaults, keep the typed value.
-- `localStorage` disabled, full or corrupted → app works; history silently disabled.
+- `localStorage` disabled, full or corrupted → app works; history works for the visit, and a short note says it won't be kept (changed in Phase 4 from "silently disabled": silent data loss is worse than a one-line explanation).
 - History entry referencing a renamed/removed unit → skipped safely (versioned key).
 - Clipboard API unavailable or denied → fallback to text selection + message.
 - Theme flash on load → inline `<script>` in `<head>` sets the theme before paint.
