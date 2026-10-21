@@ -55,3 +55,11 @@ keyboard navigation; checked at 360px and 1280px; tested on my own phone.
 - A false alarm, worth noting too. The toast didn’t appear in one screenshot. Before “fixing” anything, I checked: the screenshot
   was taken during the 150 ms fade-in. Not every surprise is a bug, so check before changing code.
 
+## Phase 4: Save recent conversions in the browser
+
+**What the AI got wrong / what I checked:**
+- A gap in my own code. My first version checked that the input was valid but not the result. 
+  1e300 PiB → bits is a valid input whose result is too big for JavaScript, so it would have been saved and shown as “undefined”.
+  I added the check and a test, then removed the check on purpose to confirm the test fails without it.
+- Mutation-tested the rules. When I made “switch category” start the save timer, the right test failed.
+
