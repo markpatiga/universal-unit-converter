@@ -45,3 +45,13 @@ This log records how I used AI throughout the project: the prompts, the decision
 **How I verified:** 94 tests pass; scripted browser run of typing, errors, tab switching and
 keyboard navigation; checked at 360px and 1280px; tested on my own phone.
 
+## Phase 3: Swap, Clear, Copy, and the Conversion Formula
+
+**What the AI got wrong / what I checked:**
+- Tab order. At first, Clear sat above the input, so pressing Tab from the categories landed on Clear before the box you type in. 
+  Moving it inside the input fixed the order. Scripted tab-order checks found this; looking at the page wouldn’t have.
+- My own accessibility mistake. I first hid the toast with visibility: hidden, which removes it from what screen readers see, so “Copied”
+  might never have been announced. I switched to hiding it with opacity.
+- A false alarm, worth noting too. The toast didn’t appear in one screenshot. Before “fixing” anything, I checked: the screenshot
+  was taken during the 150 ms fade-in. Not every surprise is a bug, so check before changing code.
+
