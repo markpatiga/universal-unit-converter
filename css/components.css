@@ -336,3 +336,95 @@
     transition: none;
   }
 }
+
+/* ---- Phase 4: recent conversions ---- */
+.history {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-rule);
+}
+
+.history-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.history-heading {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-stretch: 112%;
+}
+
+.text-button {
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.text-button[hidden],
+.history-list[hidden] {
+  display: none;
+}
+
+.history-empty,
+.history-notice {
+  margin: 0;
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}
+
+.history-notice {
+  margin-top: var(--space-3);
+}
+
+.history-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each entry is a full-width button: the conversion on the left, the
+   category on the right, separated by thin rules like ruled paper. */
+.history-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-2);
+  border: 0;
+  border-bottom: 1px solid var(--color-rule);
+  border-radius: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: var(--color-surface);
+}
+
+.history-conversion {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.history-category {
+  font-size: var(--font-size-small);
+  color: var(--color-ink-muted);
+}

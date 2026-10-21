@@ -5,7 +5,7 @@ import { createInitialState, createStore, deriveResult } from '../js/state.js';
 
 test('starts on Length, km → mi, with 1 typed so a result shows immediately', () => {
   const state = createInitialState();
-  assert.deepEqual(state, { categoryId: 'length', fromId: 'kilometer', toId: 'mile', rawInput: '1' });
+  assert.deepEqual(state, { categoryId: 'length', fromId: 'kilometer', toId: 'mile', rawInput: '1', history: [] });
   assert.equal(deriveResult(state).display, '0.6213711922');
 });
 
@@ -29,7 +29,7 @@ test('selectCategory resets units to defaults and keeps the typed value', () => 
   store.actions.setInput('25');
   store.actions.selectCategory('temperature');
   assert.deepEqual(store.getState(), {
-    categoryId: 'temperature', fromId: 'celsius', toId: 'fahrenheit', rawInput: '25',
+    categoryId: 'temperature', fromId: 'celsius', toId: 'fahrenheit', rawInput: '25', history: [],
   });
   assert.equal(deriveResult(store.getState()).display, '77');
 });
@@ -77,7 +77,7 @@ test('swapUnits swaps from and to, and keeps the typed value', () => {
 
 test('swapping can make a value invalid, and the error shows', () => {
   // -400 °F is valid (above absolute zero); -400 °C is not.
-  const store = createStore({ categoryId: 'temperature', fromId: 'fahrenheit', toId: 'celsius', rawInput: '-400' });
+  const store = createStore({ categoryId: 'temperature', fromId: 'fahrenheit', toId: 'celsius', rawInput: '-400', history: [] });
   assert.equal(deriveResult(store.getState()).status, 'valid');
   store.actions.swapUnits();
   assert.match(deriveResult(store.getState()).message, /absolute zero/);
@@ -89,7 +89,67 @@ test('clear empties the input but keeps category and units', () => {
   store.actions.setInput('120');
   store.actions.clear();
   assert.deepEqual(store.getState(), {
-    categoryId: 'speed', fromId: 'kilometerPerHour', toId: 'milePerHour', rawInput: '',
+    categoryId: 'speed', fromId: 'kilometerPerHour', toId: 'milePerHour', rawInput: '', history: [],
   });
   assert.deepEqual(deriveResult(store.getState()), { status: 'empty' });
+});
+
+// ---- Phase 4: history ----
+
+test('listeners receive the name of the action', () => {
+  const store = createStore();
+  const actions = [];
+  store.subscribe((state, action) => actions.push(action));
+  store.actions.setInput('5');
+  store.actions.selectCategory('mass');
+  store.actions.swapUnits();
+  assert.deepEqual(actions, ['setInput', 'selectCategory', 'swapUnits']);
+});
+
+test('recordConversion adds the current conversion to the top', () => {
+  const store = createStore();
+  store.actions.setInput('5');
+  store.actions.recordConversion();
+  store.actions.setInput('10');
+  store.actions.recordConversion();
+  assert.deepEqual(store.getState().history.map((e) => e.input), ['10', '5']);
+});
+
+test('recordConversion ignores empty or invalid input, and repeats of the newest entry', () => {
+  const store = createStore();
+  const calls = [];
+  store.subscribe((state, action) => calls.push(action));
+  store.actions.recordConversion();            // records "1"
+  store.actions.recordConversion();            // same again: no change, no notification
+  store.actions.setInput('abc');
+  store.actions.recordConversion();            // invalid: ignored
+  store.actions.setInput('');
+  store.actions.recordConversion();            // empty: ignored
+  assert.equal(store.getState().history.length, 1);
+  assert.deepEqual(calls, ['recordConversion', 'setInput', 'setInput']);
+});
+
+test('restore puts a past conversion back without reordering history', () => {
+  const store = createStore();
+  store.actions.selectCategory('temperature');
+  store.actions.setInput('100');
+  store.actions.recordConversion();
+  store.actions.selectCategory('length');
+  store.actions.setInput('7');
+  store.actions.recordConversion();
+  const before = store.getState().history;
+
+  store.actions.restore(before[1]);
+  const state = store.getState();
+  assert.equal(state.categoryId, 'temperature');
+  assert.equal(state.rawInput, '100');
+  assert.equal(deriveResult(state).display, '212');
+  assert.equal(state.history, before, 'same array: list order unchanged');
+});
+
+test('clearHistory empties the list', () => {
+  const store = createStore();
+  store.actions.recordConversion();
+  store.actions.clearHistory();
+  assert.deepEqual(store.getState().history, []);
 });
