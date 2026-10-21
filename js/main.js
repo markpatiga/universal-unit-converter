@@ -3,7 +3,7 @@ import { createStore } from './state.js';
 import { createRenderer } from './ui/render.js';
 
 const store = createStore();
-const render = createRenderer(document, store.actions);
+const render = createRenderer(document, store);
 
 store.subscribe(render);
 render(store.getState());

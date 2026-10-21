@@ -1,7 +1,7 @@
 # Universal Unit Converter — Design Document
 
 > Status: Approved, pre-implementation
-> Last updated: 2026-10-20 (Phase 2)
+> Last updated: 2026-10-21 (Phase 3)
 > Author: Mark (with AI-assisted design review)
 
 ## 1. Overview
@@ -68,6 +68,10 @@ Backend, accounts, currency conversion, live exchange rates, Mach number, troy o
 | History size | 10 entries, newest first, duplicates moved to the top, one-click restore, "Clear history" button. |
 | Precision | Up to 10 significant digits, trailing zeros trimmed; scientific notation below 1e-6 or above 1e15. |
 | Theme | Follows OS `prefers-color-scheme` by default; a manual toggle overrides and is persisted. |
+| Swap | Swaps the units and keeps the typed value. If that makes the value invalid (−400 °F → °C), the error shows. |
+| Clear | Empties the input only (button or Escape); category and units stay. Focus returns to the input. |
+| Copy | Copies the number only, without the unit, so it pastes cleanly into a spreadsheet or back into the converter. Falls back to `execCommand('copy')`, then to an instruction message. |
+| Formula | Linear units show `× n` or `÷ n`, whichever is shorter (km → mi is `÷ 1.609344`, exact). Temperature uses written formulas stored in `units.js`. |
 
 ## 4. Units per category
 
@@ -146,6 +150,7 @@ universal-unit-converter/
 │       └── components/   # categoryPicker, unitSelect, valueInput, resultPanel, …
 ├── tests/
 │   ├── convert.test.js
+│   ├── formula.test.js
 │   ├── validate.test.js
 │   ├── format.test.js
 │   ├── state.test.js

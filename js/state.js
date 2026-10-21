@@ -71,6 +71,14 @@ export function createStore(initialState = createInitialState()) {
       setInput(rawInput) {
         update({ rawInput });
       },
+      // Swap units, keep the typed value: "5 km → mi" becomes "5 mi → km".
+      swapUnits() {
+        update({ fromId: state.toId, toId: state.fromId });
+      },
+      // Clear empties the input only; category and units stay as chosen.
+      clear() {
+        update({ rawInput: '' });
+      },
     },
   };
 }
