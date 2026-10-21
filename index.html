@@ -29,13 +29,25 @@
       <div class="field">
         <label class="field-label" for="value-input">From</label>
         <div class="field-row">
-          <input id="value-input" class="value-input" type="text" inputmode="decimal"
-                 autocomplete="off" spellcheck="false" aria-describedby="value-error">
+          <div class="input-wrap">
+            <input id="value-input" class="value-input" type="text" inputmode="decimal"
+                   autocomplete="off" spellcheck="false" aria-describedby="value-error">
+            <button id="clear-button" class="clear-button" type="button"
+                    aria-label="Clear input" aria-keyshortcuts="Escape" hidden>Clear</button>
+          </div>
           <label class="visually-hidden" for="from-unit">From unit</label>
           <select id="from-unit" class="unit-select"></select>
         </div>
         <p id="value-error" class="field-error" hidden></p>
       </div>
+
+      <button id="swap-button" class="swap-button" type="button">
+        <svg class="swap-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+          <path d="M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Swap units
+      </button>
 
       <div class="readout">
         <label class="field-label readout-label" for="to-unit">To</label>
@@ -43,10 +55,21 @@
           <span id="result-value" class="readout-number"></span>
           <span id="result-symbol" class="readout-symbol"></span>
         </output>
-        <select id="to-unit" class="unit-select unit-select--on-dark"></select>
+        <div class="readout-controls">
+          <select id="to-unit" class="unit-select unit-select--on-dark"></select>
+          <button id="copy-button" class="copy-button" type="button">Copy result</button>
+        </div>
         <div class="readout-scale" aria-hidden="true"></div>
       </div>
+
+      <div class="formula">
+        <h2 class="formula-heading">How it’s calculated</h2>
+        <p id="formula-expression" class="formula-expression"></p>
+        <p id="formula-notes" class="formula-notes" hidden></p>
+      </div>
     </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <noscript>
       <p class="field-error">This converter needs JavaScript. Please enable it and reload the page.</p>

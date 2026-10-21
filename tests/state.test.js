@@ -63,3 +63,33 @@ test('a temperature below absolute zero shows an error, not a result', () => {
   const state = { categoryId: 'temperature', fromId: 'kelvin', toId: 'celsius', rawInput: '-5' };
   assert.match(deriveResult(state).message, /absolute zero/);
 });
+
+test('swapUnits swaps from and to, and keeps the typed value', () => {
+  const store = createStore();
+  store.actions.setInput('5');
+  store.actions.swapUnits();
+  const state = store.getState();
+  assert.equal(state.fromId, 'mile');
+  assert.equal(state.toId, 'kilometer');
+  assert.equal(state.rawInput, '5');
+  assert.equal(deriveResult(state).display, '8.04672');
+});
+
+test('swapping can make a value invalid, and the error shows', () => {
+  // -400 °F is valid (above absolute zero); -400 °C is not.
+  const store = createStore({ categoryId: 'temperature', fromId: 'fahrenheit', toId: 'celsius', rawInput: '-400' });
+  assert.equal(deriveResult(store.getState()).status, 'valid');
+  store.actions.swapUnits();
+  assert.match(deriveResult(store.getState()).message, /absolute zero/);
+});
+
+test('clear empties the input but keeps category and units', () => {
+  const store = createStore();
+  store.actions.selectCategory('speed');
+  store.actions.setInput('120');
+  store.actions.clear();
+  assert.deepEqual(store.getState(), {
+    categoryId: 'speed', fromId: 'kilometerPerHour', toId: 'milePerHour', rawInput: '',
+  });
+  assert.deepEqual(deriveResult(store.getState()), { status: 'empty' });
+});

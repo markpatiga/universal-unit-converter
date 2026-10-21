@@ -75,6 +75,16 @@ export const categories = {
     defaultTo: 'fahrenheit',
     allowNegative: true,
     minBaseValue: 0, // absolute zero, in kelvin
+    // Temperature has an offset, so a single "× factor" can't describe it.
+    // One readable formula per pair, keyed "from>to". Used by formula.js.
+    formulas: {
+      'celsius>fahrenheit': '°F = °C × 9/5 + 32',
+      'fahrenheit>celsius': '°C = (°F − 32) × 5/9',
+      'celsius>kelvin': 'K = °C + 273.15',
+      'kelvin>celsius': '°C = K − 273.15',
+      'fahrenheit>kelvin': 'K = (°F − 32) × 5/9 + 273.15',
+      'kelvin>fahrenheit': '°F = (K − 273.15) × 9/5 + 32',
+    },
     units: {
       celsius: {
         label: 'Celsius', symbol: '°C',

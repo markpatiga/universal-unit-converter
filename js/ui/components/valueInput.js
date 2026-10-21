@@ -5,19 +5,31 @@
 // behaves differently across browsers. inputmode="decimal" still brings up
 // the number keyboard on phones. (DESIGN.md §10)
 
-export function createValueInput(inputEl, errorEl, { onInput }) {
+export function createValueInput(inputEl, errorEl, { onInput, onEscape }) {
   inputEl.addEventListener('input', () => onInput(inputEl.value));
+
+  // Escape clears the input, a common keyboard convention for search-like fields.
+  inputEl.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && inputEl.value !== '') {
+      event.preventDefault();
+      onEscape();
+    }
+  });
 
   return {
     render(rawInput, result) {
       // Don't overwrite what the user is typing; only sync when they differ
-      // (e.g. when state changes from somewhere else, like Clear in Phase 3).
+      // (e.g. when Clear empties the input).
       if (inputEl.value !== rawInput) inputEl.value = rawInput;
 
       const hasError = result.status === 'invalid';
       inputEl.setAttribute('aria-invalid', String(hasError));
       errorEl.textContent = hasError ? result.message : '';
       errorEl.hidden = !hasError;
+    },
+
+    focus() {
+      inputEl.focus();
     },
   };
 }
