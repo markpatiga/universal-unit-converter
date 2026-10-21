@@ -1,4 +1,54 @@
-/* Components: category tabs, input field, unit selects, result readout. */
+/* Components, in page order: theme toggle, category tabs, input field,
+   swap, result readout, formula, history, toast. Colors come only from
+   tokens.css, so both themes work without any rules here. */
+
+/* ---- Theme toggle ---- */
+.theme-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: transparent;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-rule-strong);
+}
+
+/* Show the moon in light mode (press for dark), the sun in dark mode. */
+.theme-icon-sun,
+.theme-toggle[aria-pressed="true"] .theme-icon-moon {
+  display: none;
+}
+
+.theme-toggle[aria-pressed="true"] .theme-icon-sun {
+  display: inline;
+}
+
+/* On phones, the icon alone, so the title keeps its width. The words stay
+   in the HTML (visually hidden), so screen readers still hear "Dark mode". */
+@media (max-width: 29.99rem) {
+  .theme-toggle {
+    width: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+  .theme-toggle-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
 
 /* ---- Category tabs ---- */
 .category-tabs {
@@ -20,17 +70,17 @@
 }
 
 .category-tab:hover {
-  border-color: var(--color-ink);
+  border-color: var(--color-rule-strong);
 }
 
 .category-tab[aria-selected="true"] {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
+  border-color: var(--color-selected);
+  background: var(--color-selected);
+  color: var(--color-on-selected);
   font-weight: 650;
 }
 
-/* ---- Fields ---- */
+/* ---- Input field ---- */
 .converter {
   display: grid;
   gap: var(--space-4);
@@ -41,20 +91,33 @@
   margin-bottom: var(--space-2);
   font-size: var(--font-size-small);
   font-weight: 600;
-  color: var(--color-ink-muted);
+  color: var(--color-text-muted);
 }
 
-/* Stacked on phones, side by side from 30rem. */
+/* Phones: input, its error, then the unit select, stacked.
+   Wider: input and select side by side, error under the input.
+   Grid areas keep the error next to the input it describes. */
 .field-row {
   display: grid;
+  grid-template-areas:
+    "input"
+    "error"
+    "unit";
   gap: var(--space-2);
 }
 
 @media (min-width: 30rem) {
   .field-row {
     grid-template-columns: 1fr 13rem;
+    grid-template-areas:
+      "input unit"
+      "error error";
   }
 }
+
+.input-wrap { grid-area: input; position: relative; }
+.field-row .unit-select { grid-area: unit; }
+.field-error { grid-area: error; }
 
 .value-input,
 .unit-select {
@@ -63,13 +126,13 @@
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-control);
   background: var(--color-surface);
-  /* Set explicitly: inside the navy readout, inherited text color is white,
-     which made the "To" select white-on-white. */
-  color: var(--color-ink);
+  /* Set explicitly: inside the readout, inherited text color is white,
+     which once made the "To" select white-on-white. */
+  color: var(--color-text);
 }
 
 .value-input {
-  padding: 0 var(--space-4);
+  padding: 0 5rem 0 var(--space-4); /* room on the right for Clear */
   font-size: var(--font-size-input);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -77,7 +140,7 @@
 
 .value-input:hover,
 .unit-select:hover {
-  border-color: var(--color-ink-muted);
+  border-color: var(--color-rule-strong);
 }
 
 .value-input[aria-invalid="true"] {
@@ -91,10 +154,65 @@
 }
 
 .field-error {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   font-size: var(--font-size-small);
   font-weight: 600;
   color: var(--color-error);
+}
+
+/* Clear sits inside the input's right edge, like a search box. It comes
+   after the input in the HTML, so Tab reaches the input first. */
+.clear-button {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  color: var(--color-text);
+}
+
+/* ---- Swap ---- */
+.swap-button {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: 0 var(--space-4) 0 var(--space-3);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.swap-button:hover {
+  border-color: var(--color-rule-strong);
+}
+
+/* Half-turn of the arrows, replayed on every click (JS toggles the class). */
+.swap-button.is-turning .swap-icon {
+  animation: swap-turn 300ms ease-out;
+}
+
+@keyframes swap-turn {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(180deg); }
 }
 
 /* ---- Result readout: the one bold element on the page ---- */
@@ -104,14 +222,14 @@
   gap: var(--space-3);
   padding: var(--space-4) var(--space-4) calc(var(--space-6) + 14px);
   border-radius: var(--radius-panel);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
+  background: var(--color-panel);
+  color: var(--color-on-panel);
   overflow: hidden;
 }
 
 .readout-label {
   margin-bottom: 0;
-  color: var(--color-on-ink-muted);
+  color: var(--color-on-panel-muted);
 }
 
 .readout-value {
@@ -137,18 +255,58 @@
 }
 
 .readout-number.is-placeholder {
-  color: var(--color-on-ink-muted);
+  color: var(--color-on-panel-muted);
 }
 
 .readout-symbol {
   font-size: 0.45em;
   font-weight: 500;
-  color: var(--color-tape);
+  color: var(--color-accent);
 }
 
-.unit-select--on-dark {
+/* "To" unit select and Copy button share a row inside the readout. */
+.readout-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.readout-controls .unit-select {
+  flex: 1 1 12rem;
   max-width: 20rem;
   border-color: transparent;
+  background: var(--color-panel-control);
+  color: var(--color-on-panel-control);
+}
+
+.copy-button {
+  flex: 0 0 auto;
+  min-height: var(--control-height);
+  padding: 0 var(--space-4);
+  /* Transparent, not 0: invisible normally, but drawn as a real outline in
+     Windows High Contrast, where background colors are removed. */
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  font-weight: 700;
+  color: var(--color-on-accent);
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background: var(--color-accent-hover);
+}
+
+.copy-button:disabled {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-on-panel-muted);
+  color: var(--color-on-panel-muted);
+  cursor: default;
+}
+
+/* The page's blue focus ring is hard to see on the navy panel. */
+.readout :focus-visible {
+  outline-color: var(--color-focus-on-panel);
 }
 
 /* Tape-measure graduations along the bottom edge, hanging from the top
@@ -161,119 +319,13 @@
   bottom: 0;
   height: 14px;
   background:
-    linear-gradient(to right, var(--color-ink) 2px, transparent 0) 0 0 / 80px 100% repeat-x,
-    linear-gradient(to right, var(--color-ink) 1px, transparent 0) 0 0 / 40px 60% repeat-x,
-    linear-gradient(to right, var(--color-ink) 1px, transparent 0) 0 0 / 8px 35% repeat-x,
-    var(--color-tape);
+    linear-gradient(to right, var(--color-tick) 2px, transparent 0) 0 0 / 80px 100% repeat-x,
+    linear-gradient(to right, var(--color-tick) 1px, transparent 0) 0 0 / 40px 60% repeat-x,
+    linear-gradient(to right, var(--color-tick) 1px, transparent 0) 0 0 / 8px 35% repeat-x,
+    var(--color-accent);
 }
 
-/* ---- Phase 3: actions and formula ---- */
-
-/* Clear sits inside the input's right edge, like a search box. It comes
-   after the input in the HTML, so Tab reaches the input first. */
-.input-wrap {
-  position: relative;
-}
-
-.input-wrap .value-input {
-  padding-right: 5rem;
-}
-
-.clear-button {
-  position: absolute;
-  top: 50%;
-  right: var(--space-2);
-  transform: translateY(-50%);
-  min-height: 2rem;
-  padding: 0 var(--space-2);
-  border: 0;
-  border-radius: var(--radius-control);
-  background: none;
-  font-size: var(--font-size-small);
-  font-weight: 600;
-  color: var(--color-ink-muted);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  cursor: pointer;
-}
-
-.clear-button:hover {
-  color: var(--color-ink);
-}
-
-.clear-button[hidden] {
-  display: none;
-}
-
-.swap-button {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 2.5rem;
-  padding: 0 var(--space-4) 0 var(--space-3);
-  border: 1px solid var(--color-rule);
-  border-radius: 999px;
-  background: var(--color-surface);
-  font-size: var(--font-size-small);
-  font-weight: 600;
-  color: var(--color-ink);
-  cursor: pointer;
-}
-
-.swap-button:hover {
-  border-color: var(--color-ink);
-}
-
-/* Half-turn of the arrows, replayed on every click (JS toggles the class). */
-.swap-button.is-turning .swap-icon {
-  animation: swap-turn 300ms ease-out;
-}
-
-@keyframes swap-turn {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(180deg); }
-}
-
-/* "To" unit select and Copy button share a row inside the readout. */
-.readout-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.readout-controls .unit-select {
-  flex: 1 1 12rem;
-}
-
-.copy-button {
-  flex: 0 0 auto;
-  min-height: var(--control-height);
-  padding: 0 var(--space-4);
-  border: 0;
-  border-radius: var(--radius-control);
-  background: var(--color-tape);
-  font-weight: 700;
-  color: var(--color-ink);
-  cursor: pointer;
-}
-
-.copy-button:hover {
-  background: #ffc61a;
-}
-
-.copy-button:disabled {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--color-on-ink-muted);
-  color: var(--color-on-ink-muted);
-  cursor: default;
-}
-
-/* Focus ring must show on the navy panel too. */
-.readout :focus-visible {
-  outline-color: var(--color-tape);
-}
-
+/* ---- Formula ---- */
 .formula {
   padding: 0 var(--space-1);
 }
@@ -282,7 +334,7 @@
   margin: 0 0 var(--space-1);
   font-size: var(--font-size-small);
   font-weight: 600;
-  color: var(--color-ink-muted);
+  color: var(--color-text-muted);
 }
 
 .formula-expression {
@@ -295,49 +347,10 @@
 .formula-notes {
   margin: var(--space-1) 0 0;
   font-size: var(--font-size-small);
-  color: var(--color-ink-muted);
+  color: var(--color-text-muted);
 }
 
-/* Toast: bottom center, slides up a little when shown. */
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: var(--space-6);
-  max-width: calc(100% - 2 * var(--space-4));
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-control);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
-  font-weight: 600;
-  box-shadow: 0 6px 20px rgb(20 33 61 / 0.25);
-  transform: translate(-50%, 0.5rem);
-  opacity: 0;
-  pointer-events: none;
-  /* Hidden with opacity, not visibility/display: a live region that is
-     removed from the accessibility tree may not be announced. */
-  transition: opacity 150ms ease-out, transform 150ms ease-out;
-}
-
-.toast:empty {
-  padding: 0;
-}
-
-.toast.is-visible {
-  transform: translate(-50%, 0);
-  opacity: 1;
-}
-
-/* Respect the "reduce motion" system setting: no turning, no sliding. */
-@media (prefers-reduced-motion: reduce) {
-  .swap-button.is-turning .swap-icon {
-    animation: none;
-  }
-  .toast {
-    transition: none;
-  }
-}
-
-/* ---- Phase 4: recent conversions ---- */
+/* ---- Recent conversions ---- */
 .history {
   margin-top: var(--space-8);
   padding-top: var(--space-6);
@@ -367,22 +380,18 @@
   background: none;
   font-size: var(--font-size-small);
   font-weight: 600;
-  color: var(--color-ink);
+  color: var(--color-text);
   text-decoration: underline;
   text-underline-offset: 0.2em;
+  white-space: nowrap;
   cursor: pointer;
-}
-
-.text-button[hidden],
-.history-list[hidden] {
-  display: none;
 }
 
 .history-empty,
 .history-notice {
   margin: 0;
   font-size: var(--font-size-small);
-  color: var(--color-ink-muted);
+  color: var(--color-text-muted);
 }
 
 .history-notice {
@@ -405,7 +414,7 @@
   gap: var(--space-1) var(--space-4);
   width: 100%;
   min-height: 2.75rem;
-  padding: var(--space-2) var(--space-2);
+  padding: var(--space-2);
   border: 0;
   border-bottom: 1px solid var(--color-rule);
   border-radius: 0;
@@ -426,5 +435,59 @@
 
 .history-category {
   font-size: var(--font-size-small);
-  color: var(--color-ink-muted);
+  color: var(--color-text-muted);
+}
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  max-width: calc(100% - 2 * var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-toast);
+  color: var(--color-on-toast);
+  font-weight: 600;
+  box-shadow: var(--shadow-toast);
+  transform: translate(-50%, 0.5rem);
+  opacity: 0;
+  pointer-events: none;
+  /* Hidden with opacity, not visibility/display: a live region that is
+     removed from the accessibility tree may not be announced. */
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.toast:empty {
+  padding: 0;
+}
+
+.toast.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+/* ---- System settings ---- */
+
+/* "Reduce motion": no turning arrows, no sliding toast. */
+@media (prefers-reduced-motion: reduce) {
+  .swap-button.is-turning .swap-icon {
+    animation: none;
+  }
+  .toast {
+    transition: none;
+  }
+}
+
+/* Windows High Contrast / forced colors: the browser replaces our colors,
+   so a filled background can't mark the selected tab. Use a thick border
+   and underline instead, in system colors. */
+@media (forced-colors: active) {
+  .category-tab[aria-selected="true"] {
+    border: 3px solid Highlight;
+    text-decoration: underline;
+  }
+  .readout {
+    border: 1px solid CanvasText;
+  }
 }
