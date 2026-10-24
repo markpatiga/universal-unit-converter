@@ -4,8 +4,6 @@ A fast, accessible, client-side unit converter for length, weight, temperature, 
 
 **Live demo:** https://markpatiga.github.io/universal-unit-converter/
 
-> Status: Phase 0 (setup). The app is under active development.
-
 ## Tech stack
 
 HTML, CSS and vanilla JavaScript (ES modules), tested with the Node.js built-in test runner and hosted on GitHub Pages.
